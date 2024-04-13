@@ -1,15 +1,24 @@
-def load_tasks(filename='todo_list.txt'):
-    tasks = []
+import json
+
+TASKS_FILE = 'tasks.json'
+
+def load_tasks():
     try:
-        with open(filename, 'r') as file:
-            tasks = [line.strip() for line in file]
-    except FileNotFoundError:
-        # If the file doesn't exist, we return an empty list
-        pass
-    return tasks
+        with open(TASKS_FILE, 'r') as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
 
+def save_tasks(tasks):
+    with open(TASKS_FILE, 'w') as file:
+        json.dump(tasks, file)
 
-def save_tasks(tasks, filename='todo_list.txt'):
-    with open(filename, 'w') as file:
-        for task in tasks:
-            file.write(task + '\n')
+def save_task(task):
+    tasks = load_tasks()
+    tasks.append(task)
+    save_tasks(tasks)
+
+def delete_task(task_to_delete):
+    tasks = load_tasks()
+    tasks = [task for task in tasks if task != task_to_delete]
+    save_tasks(tasks)
